@@ -8,18 +8,13 @@ const shortenUrl = async (req, res) => {
 
     // generate short code
     const urlCode = shortid.generate();
-    const shortUrl = `${process.env.BASE_URL}/${urlCode}`;
 
-    // save to DB
-    const url = new Url({ longUrl, shortUrl, urlCode, date: new Date() });
+    // save to DB (store shortUrl as code only)
+    const url = new Url({ longUrl, shortUrl: urlCode, urlCode, date: new Date() });
     await url.save();
 
-    // 👇 either return this
-    // res.json({ shortUrl });  
-
-    // 👇 OR this (so frontend stays same)
-    // inside shortenUrl
-    res.json({ shortUrl });
+    // return only the short code
+    res.json({ shortUrl: urlCode });
 
   } catch (err) {
     console.error(err);

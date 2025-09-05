@@ -6,13 +6,14 @@ export default function App() {
   const [shortUrl, setShortUrl] = useState("");
   const [history, setHistory] = useState([]);
 
+  const BACKEND_URL = "http://localhost:5000"; // base for redirect
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!longUrl) return;
 
     try {
-      // Backend returns { shortUrl }
-      const res = await axios.post("http://localhost:5000/shorten", { longUrl });
+      const res = await axios.post(`${BACKEND_URL}/shorten`, { longUrl });
       const newShort = res.data.shortUrl;
 
       setShortUrl(newShort);
@@ -24,9 +25,15 @@ export default function App() {
     }
   };
 
-  const copyToClipboard = (url) => {
-    navigator.clipboard.writeText(url);
-    alert("✅ Copied to clipboard!");
+  const copyToClipboard = (code) => {
+    const fullUrl = `${BACKEND_URL}/${code}`;
+    navigator.clipboard.writeText(fullUrl);
+    alert(`✅ Copied to clipboard: ${fullUrl}`);
+  };
+
+  const openUrl = (code) => {
+    const fullUrl = `${BACKEND_URL}/${code}`;
+    window.open(fullUrl, "_blank");
   };
 
   return (
@@ -60,10 +67,11 @@ export default function App() {
         {shortUrl && (
           <div className="mt-6 bg-gray-700/60 p-4 rounded-xl flex items-center justify-between">
             <a
-              href={shortUrl}
+              href={`${BACKEND_URL}/${shortUrl}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-400 hover:underline break-all"
+              onClick={() => openUrl(shortUrl)}
             >
               {shortUrl}
             </a>
@@ -92,10 +100,11 @@ export default function App() {
                     {item.longUrl}
                   </span>
                   <a
-                    href={item.shortUrl}
+                    href={`${BACKEND_URL}/${item.shortUrl}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-400 hover:underline text-sm"
+                    onClick={() => openUrl(item.shortUrl)}
                   >
                     {item.shortUrl}
                   </a>
